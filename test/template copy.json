@@ -1,0 +1,33 @@
+{
+    "block": {
+        "header": {
+            "loop": 1
+        },
+        "Loop": {
+            "loop": 2        
+        },
+        "case": {
+            "loop": 3
+        }
+    },
+    "index":{
+        "value": {
+            "type": "template",
+            "template": "(byte)@@byte@@",
+            "number": 3,
+            "split": ","
+        },
+        "byte": {
+            "type": "Byte",
+            "attribute": {
+                "value": [1,2,3]
+            }
+        },
+        "case_name": {
+            "type": "String",
+            "attribute": {
+                "value": "abc"
+            }
+        }
+    }
+}

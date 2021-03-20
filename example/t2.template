@@ -1,0 +1,47 @@
+@name   ArrayTypeServiceTest
+@desc   description
+@author jie.
+@version    1.1.0
+@jsIndex    ./t2
+@output     ./ArrayTypeServiceTest.java
+@template
+package com.hundsun.jrescloud.test.sofa.rpc.t2;
+
+import java.util.Arrays;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.hundsun.jrescloud.rpc.annotation.CloudComponent;
+import com.hundsun.jrescloud.rpc.annotation.CloudReference;
+import com.hundsun.jrescloud.test.sofa.rpc.t2.RpcT2TestRunner;
+import com.hundsun.jrescloud.test.sofa.rpc.t2.service.IArrayTypeService;
+
+@RunWith(RpcT2TestRunner.class)
+@CloudComponent
+public class ArrayTypeServiceTest {
+
+	@CloudReference
+	private IArrayTypeService arrayService;
+
+	@#case{"loop":2}#@
+	@Test
+	public void testByteArray@@int_incream{"size":2}@@() {
+		byte[] temp = { @@array_value@@ };
+		byte[] result = arrayService.testByteArray(temp);
+		Assert.assertTrue(Arrays.equals(result, temp));
+	}
+	@#case#@
+
+	@#case{"loop":5}#@
+	@Test
+	public void testByteArrayAsync@@int_incream@@() {
+		byte[] temp = { @@array_byte@@ };
+		byte[] result = arrayService.testByteArrayAsync(temp);
+		Assert.assertTrue(Arrays.equals(result, temp));
+	}
+	@#case#@
+}
+
+

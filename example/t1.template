@@ -1,0 +1,15 @@
+@name   t1
+@desc   description
+@author jie.
+@version    1.1.0
+@jsIndex    ./t1.json
+@output     ./t1.java
+@template
+class Test {
+    @#t1#@
+    void test_@@t1@@() {
+       byte[] temp = { @@t1@@ };
+    }
+    @#t1#@
+}
+

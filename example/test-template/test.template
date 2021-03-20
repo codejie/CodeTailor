@@ -1,0 +1,10 @@
+@name test
+@version v0.1
+@author Jie.
+@jsonIndex ./test.json
+@template
+{
+    @#case#@
+    this is @@test{"isTemplate": false}@@ line.
+    @#case#@
+}

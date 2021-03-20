@@ -1,0 +1,14 @@
+@name   abc
+@desc   description
+@author jie.
+@version    1.1.0
+@output     ./case.java
+@template
+class Test {
+    @#case#@
+    void test_@@case_name@@() {
+       byte[] temp = { @@value@@ };
+       system.out.println(temp);
+    }
+    @#case#@
+}

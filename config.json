@@ -1,0 +1,7 @@
+{
+    "Logger": {
+        "level": "debug",
+        "pretty": true,
+        "color": "level"
+    }
+}

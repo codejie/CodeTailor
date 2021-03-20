@@ -1,0 +1,17 @@
+{
+    "symbol": [
+        {
+            "name": "test",
+            "isTemplate": true,
+            "template": "@@sub@@",
+            "size": 2,
+            "delimiter": ";;",
+            "value" : "tt"
+        },
+        {
+            "name": "sub",
+            "isTemplate": true,
+            "template": "<@@int@@>"
+        }
+    ]
+}

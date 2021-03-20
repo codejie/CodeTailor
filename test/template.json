@@ -1,0 +1,26 @@
+{
+    "block": {
+        "case": {
+            "loop": 3
+        }
+    },
+    "index":{
+        "value": {
+            "isTemplate": true,
+            "template": "(byte)@@byte@@",
+            "size": 3,
+            "delimiter": ","
+        },
+        "byte": {
+            "ext": {
+                "value": 9
+            }
+        },
+        "case_name": {
+            "type": "String",
+            "ext": {
+                "value": "abc"
+            }
+        }
+    }
+}

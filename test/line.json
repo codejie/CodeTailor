@@ -1,0 +1,14 @@
+{
+    "value": {
+        "type": "template",
+        "template": "(byte)@@byte@@",
+        "number": 3,
+        "split": ","
+    },
+    "byte": {
+        "type": "Byte",
+        "attribute": {
+            "value": 0
+        }
+    }
+}
