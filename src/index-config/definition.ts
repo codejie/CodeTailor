@@ -7,13 +7,14 @@ export interface Block {
 export interface Symbol {
     name: string,
     base?: string,
-    isTemplate?: boolean,
+    isTemplate?: boolean, // false
     template?: string,
-    size?: number,
+    size?: number, // 1
     delimiter?: string,
     output?: (indexConfig?: IndexConfig, nested?: BlockNested[], position?: number) => string,
     value?: string,
     // ext?: any,
+    maxNested?:number, // 64
     desc?: string,
     example?: string
 }

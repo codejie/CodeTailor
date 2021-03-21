@@ -13,16 +13,6 @@ interface BlockResult {
     items: Item[]
 }
 
-// interface IndexParams {
-//     index: string,
-//     params?: any
-// }
-
-// interface BlockNested {
-//     block: IndexParams,
-//     loop: number      
-// }
-
 function parseIndexParams(str: string): IndexParams {
     const begin = str.indexOf('{');
     if (begin !== -1) {
@@ -56,8 +46,6 @@ function checkBlock(str: string): IndexParams | null {
     str = str.substring(2, str.length - 2);
     // parse parameters
     return parseIndexParams(str);
-
-    // return str.substring(2, str.length - 2);
 }
 
 function removeEscape(str: string): string {
@@ -195,12 +183,12 @@ function generateLine(item: Item, indexConfig: IndexConfig, nested: BlockNested[
         logger.debug('line - ' + line);
     }
     // if (line) {
-    return scanSymbolItems(line, indexConfig, nested, 0);
+    return scanSymbolItems(line, indexConfig, nested, 0, 0);
     // }
     // return '';
 }
 
-function scanSymbolItems(line: string, indexConfig: IndexConfig, nested: BlockNested[], position: number): string {
+function scanSymbolItems(line: string, indexConfig: IndexConfig, nested: BlockNested[], position: number, level: number): string {
     let ret = '';
     let found = false;
     let start: number  = 0;
@@ -213,7 +201,7 @@ function scanSymbolItems(line: string, indexConfig: IndexConfig, nested: BlockNe
         } else {
             logger.debug('index = ' + line.substring(start, pos));
             const index = parseIndexParams(line.substring(start, pos));
-            ret += translateSymbol(index, indexConfig, nested, position);
+            ret += translateSymbol(index, indexConfig, nested, position, level);
             // ret += translateSymbol(line.substring(start, pos), indexConfig, nested, position);
 
             found = false;
@@ -232,7 +220,7 @@ function scanSymbolItems(line: string, indexConfig: IndexConfig, nested: BlockNe
     return ret;
 }
 
-function translateSymbol(index: IndexParams, indexConfig: IndexConfig, nested: BlockNested[], position?: number): string {
+function translateSymbol(index: IndexParams, indexConfig: IndexConfig, nested: BlockNested[], position: number, level: number): string {
     let cfg: any | undefined  = indexConfig.symbol[index.index];
     if (cfg) {
         if (index.params) {
@@ -241,7 +229,13 @@ function translateSymbol(index: IndexParams, indexConfig: IndexConfig, nested: B
         let ret: string = '';
         for (let i = 0; i < cfg.size; ++ i) {
             if (cfg.isTemplate) {
-                ret += scanSymbolItems(cfg.template, indexConfig, nested, i);
+                logger.debug('level = ' + level);
+                if (level < (cfg.maxNested || 64)) {
+                    ret += scanSymbolItems(cfg.template, indexConfig, nested, i, ++ level);
+                } else {
+                    break;
+                    // throw new Error('symbol stack size exceeded - ' + index.index);
+                }
             } else {
                 ret += cfg.output(indexConfig, nested, i);
             }
@@ -251,18 +245,6 @@ function translateSymbol(index: IndexParams, indexConfig: IndexConfig, nested: B
                 }
             }
         }
-        // if (cfg.isTemplate) {
-        //     for (let i = 0; i < cfg.size; ++ i) {
-        //         ret += scanSymbolItems(cfg.template, indexConfig, nested, i);
-        //         if (cfg.delimiter) {
-        //             if (i < cfg.size - 1) {
-        //                 ret += cfg.delimiter;
-        //             }
-        //         }
-        //     }
-        // } else {
-        //     ret = cfg.output(indexConfig, nested, position);
-        // }
 
         return ret;
     }

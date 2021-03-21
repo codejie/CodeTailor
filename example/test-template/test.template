@@ -16,4 +16,6 @@ This is a normal line.
     @@example{"value":"for example"}@@:
     multi output: @@multi@@
     complex output: @@complex{"size": 2}@@.
+    nested output: @@nested@@
+    recursion output: @@recursion@@
 @#case#@

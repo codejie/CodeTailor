@@ -22,6 +22,7 @@ This is a normal line.
     @@example{"value":"for example"}@@:
     multi output: @@multi@@
     complex output: @@complex{"size": 2}@@.
+    recursion output: @@recursion@@
 @#case#@
 
 ```
@@ -38,4 +39,6 @@ This is a normal line.
     complex output: 
         line in block 'case' at 0 loop
         line in block 'case' at 1 loop.
+    nested output: symbol indicator with abc|abc|abc.
+    recursion output: ********
 ```

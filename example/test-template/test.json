@@ -23,6 +23,16 @@
             "size": 2,
             "value": "abc",
             "delimiter": "|"
+        },
+        {
+            "name": "nested",
+            "isTemplate": true,
+            "template": "@@symbol@@ with @@multi{\"size\":3}@@." 
+        },
+        {
+            "name": "recursion",
+            "isTemplate": true,
+            "template": "*@@recursion{\"maxNested\":8}@@"
         }
     ]
 }
