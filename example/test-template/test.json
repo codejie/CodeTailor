@@ -1,17 +1,28 @@
 {
+    "block": [
+        {
+            "name": "case",
+            "loop": 1
+        }
+    ],
     "symbol": [
         {
-            "name": "test",
-            "isTemplate": true,
-            "template": "@@sub@@",
-            "size": 2,
-            "delimiter": ";;",
-            "value" : "tt"
+            "name": "example",
+            "base": "string"
         },
         {
-            "name": "sub",
-            "isTemplate": true,
-            "template": "<@@int@@>"
+            "name": "loop",
+            "value": "loop parameter of a block indicator"
+        },
+        {
+            "name": "symbol",
+            "value": "symbol indicator"
+        },
+        {
+            "name": "multi",
+            "size": 2,
+            "value": "abc",
+            "delimiter": "|"
         }
     ]
 }

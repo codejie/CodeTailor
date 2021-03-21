@@ -2,9 +2,18 @@
 @version v0.1
 @author Jie.
 @jsonIndex ./test.json
+@jsIndex ./test
 @template
-{
-    @#case#@
-    this is @@test{"isTemplate": false}@@ line.
-    @#case#@
-}
+This is a normal line.
+
+@#case{"loop":1}#@
+    `@`#case`@`# is the block indicator;
+@#case#@
+
+@#case#@
+    `@`@symbol`@`@ is the symbol indicator;
+    '@@symbol@@' is a simple string or complex object;
+    @@example{"value":"for example"}@@:
+    multi output: @@multi@@
+    complex output: @@complex{"size": 2}@@.
+@#case#@

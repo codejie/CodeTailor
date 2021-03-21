@@ -60,27 +60,30 @@ function checkBlock(str: string): IndexParams | null {
     // return str.substring(2, str.length - 2);
 }
 
+function removeEscape(str: string): string {
+    return str.replace(/`@/g, '@').replace(/`#/g, '#');
+}
+
 function parseTemplate(lines: string[]): Item[] {
     const ret: Item[] = [];
 
     let i = 0;
     while (i < lines.length) {
-        const item = lines[i];
-        const result = checkBlock(item);
+        let line = lines[i];
+        const result = checkBlock(line);
+        line = removeEscape(line);
         if (result) {
             const { pos, block, items } = scanBlockItems(result, lines, i + 1);
             ret.push({
                 type: 2,
                 data: block,
-                // template: block,
                 items: items                
             });
             i = pos + 1;
         } else {
             ret.push({
                 type: 1,
-                data: item
-                // template: item
+                data: line
             });
             
             ++ i;
@@ -94,8 +97,9 @@ function scanBlockItems(parent: IndexParams, lines: string[], pos: number): Bloc
     const ret: Item[] = [];
     let i = pos;
     while (i < lines.length) {
-        const item = lines[i];
-        const result = checkBlock(item); // index & params
+        let line = lines[i];
+        const result = checkBlock(line); // index & params
+        line = removeEscape(line);
         if (result) {
             if (result.index !== parent.index) {
                 const { pos, block, items } = scanBlockItems(result, lines, i + 1);
@@ -118,7 +122,7 @@ function scanBlockItems(parent: IndexParams, lines: string[], pos: number): Bloc
         } else {
             ret.push({
                 type: 1,
-                data: item             
+                data: line             
             });
 
             ++ i;
@@ -204,7 +208,7 @@ function scanSymbolItems(line: string, indexConfig: IndexConfig, nested: BlockNe
     while (pos !== -1) {
         if (found === false) {
             logger.debug('str = ' + line.substring(start, pos));
-            ret += line.substring(start, pos);
+            ret += removeEscape(line.substring(start, pos));
             found = true;
         } else {
             logger.debug('index = ' + line.substring(start, pos));
@@ -223,7 +227,7 @@ function scanSymbolItems(line: string, indexConfig: IndexConfig, nested: BlockNe
     }
     // if (start < template.length - 1) {
         logger.debug('str = ' + line.substring(start));
-        ret += line.substring(start);
+        ret += removeEscape(line.substring(start));
     // }
     return ret;
 }
@@ -239,7 +243,7 @@ function translateSymbol(index: IndexParams, indexConfig: IndexConfig, nested: B
             if (cfg.isTemplate) {
                 ret += scanSymbolItems(cfg.template, indexConfig, nested, i);
             } else {
-                ret += cfg.output(indexConfig, nested, position);
+                ret += cfg.output(indexConfig, nested, i);
             }
             if (cfg.delimiter) {
                 if (i < cfg.size - 1) {
