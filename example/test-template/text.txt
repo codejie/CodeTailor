@@ -1,0 +1,16 @@
+This is a normal line.
+
+    @#case@# is the block indicator;
+
+    symbol indicator is the symbol indicator;
+    'symbol indicator' is a simple string or complex object;
+    for example:
+    multi output: abc|abc
+    complex output: 
+	line in block 'case' at 0 loop
+	line in block 'case' at 1 loop.
+    nested output: symbol indicator with abc|abc|abc.
+    recursion output: ********
+
+    abc
+    xyz

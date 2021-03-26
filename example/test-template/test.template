@@ -3,6 +3,7 @@
 @author Jie.
 @jsonIndex ./test.json
 @jsIndex ./test
+@output ./text.txt
 @template
 This is a normal line.
 
@@ -18,4 +19,8 @@ This is a normal line.
     complex output: @@complex{"size": 2}@@.
     nested output: @@nested@@
     recursion output: @@recursion@@
+@#case#@
+
+@#case{"values":["abc", "xyz"]}#@
+    @@name-with-case-value@@
 @#case#@

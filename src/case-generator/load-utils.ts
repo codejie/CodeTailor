@@ -5,16 +5,6 @@ import readline from 'readline';
 import { loadBlockConfig, loadSymbolConfig, scanFolder } from '../index-config';
 import { Block, Symbol, IndexConfig, Template } from '../index-config/definition';
 
-// interface Template {
-//     name: string,
-//     desc?: string,
-//     author?: string,
-//     version?: string,
-//     indexConfig?: string,
-//     output?: string,
-//     lines: string[],
-// }
-
 export function loadTemplate(indexConfig: IndexConfig, file: string): Promise<Template> {
     return new Promise<Template>((resolve, reject) => {
         const ret: any = {
@@ -59,6 +49,46 @@ export function loadTemplate(indexConfig: IndexConfig, file: string): Promise<Te
 }
 
 export async function loadProject(file: string): Promise<void> {
+    // return new Promise<void>((resolve, reject) => {
+    //     const ret: any = {
+    //         name: 'undefined',
+    //         file: file,
+    //         lines: []
+    //     };
+    //     let isTemplate = false;
+        
+    //     const reader = readline.createInterface({
+    //         input: fs.createReadStream(file)
+    //     });
+    
+    //     reader.on('line', line => {
+    //         if (!isTemplate) {
+    //             const ctx = line.split(/[ \t]+/);
+    //             if (ctx && ctx.length > 0 && ctx[0].length > 1) {
+    //                 const label = ctx[0].substring(1);
+    //                 if (label === '##') { // remark
+    //                     // skip
+    //                 } else if (label === 'template') {
+    //                     isTemplate = true;
+    //                 } else {
+    //                     ret[label] = ctx[1];
+    //                 }
+    //                 // if (label != 'template') {
+    //                 //     ret[label] = ctx[1];
+    //                 // } else {
+    //                 //     isTemplate = true;
+    //                 // }
+    //             }
+    //         } else {
+    //             ret.lines.push(line);
+    //         }
+    //     });
+
+    //     reader.on('close', () => {
+    //         ret.indexConfig = mergeTemplateIndex(indexConfig, ret);
+    //         resolve(ret);
+    //     });    
+    // });    
     return Promise.resolve();
 }
 

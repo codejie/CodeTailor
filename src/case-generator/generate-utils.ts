@@ -1,5 +1,5 @@
 import logger from "../logger";
-import { BlockNested, IndexConfig, IndexParams } from "../index-config/definition";
+import { Block, BlockNested, IndexConfig, IndexParams } from "../index-config/definition";
 
 interface Item {
     type: number, // 1: line, 2: block
@@ -144,32 +144,43 @@ function generateBlock(item: Item, indexConfig: IndexConfig, nested: BlockNested
 
     if (item.items) {
         let loop = 1;
-        let cfg: any | undefined = indexConfig.block[block.index];
-        if (cfg) {
-            if (block.params) {
-                cfg = { ...cfg, ...block.params };
-            }
-            if (cfg.loop) {
-                loop = cfg.loop;
-            }
+        let cfg: Block | undefined = indexConfig.block[block.index];
+        if (!cfg) {
+            throw new Error('block not found - ' + block.index);            
         }
-        // if (item.template) {
-        //     const cfg: any | undefined = indexConfig.block[item.template];
-        //     if (cfg && cfg.loop) {
-        //         loop = cfg.loop;
-        //     }
-        // }
 
-        for (let i = 0; i < loop; ++ i) {
-            nested.push({
-                block: block,
-                loop: i
-            });
-
-            ret.push(...generate(item.items, indexConfig, nested));
-
-            nested.pop();
-        }    
+        if (block.params) {
+            cfg = { ...cfg, ...block.params };
+        }
+        if (cfg!.loop) {
+            loop = cfg!.loop;
+        }
+        if (!(cfg!.values)) {
+            for (let i = 0; i < loop; ++ i) {
+                nested.push({
+                    block: block,
+                    loop: i
+                });
+    
+                ret.push(...generate(item.items, indexConfig, nested));
+    
+                nested.pop();
+            }        
+        } else {
+            for (let i = 0; i < loop; ++ i) {
+                cfg!.values.forEach(value => {
+                    nested.push({
+                        block: block,
+                        loop: i,
+                        value: value
+                    });
+        
+                    ret.push(...generate(item.items!, indexConfig, nested));
+        
+                    nested.pop();    
+                });
+            } 
+        }  
     }
     return ret;
 }
@@ -222,34 +233,35 @@ function scanSymbolItems(line: string, indexConfig: IndexConfig, nested: BlockNe
 
 function translateSymbol(index: IndexParams, indexConfig: IndexConfig, nested: BlockNested[], position: number, level: number): string {
     let cfg: any | undefined  = indexConfig.symbol[index.index];
-    if (cfg) {
-        if (index.params) {
-            cfg = { ...cfg, ...index.params };
-        }
-        let ret: string = '';
-        for (let i = 0; i < cfg.size; ++ i) {
-            if (cfg.isTemplate) {
-                logger.debug('level = ' + level);
-                if (level < (cfg.maxNested || 64)) {
-                    ret += scanSymbolItems(cfg.template, indexConfig, nested, i, ++ level);
-                } else {
-                    break;
-                    // throw new Error('symbol stack size exceeded - ' + index.index);
-                }
+    if (!cfg) {
+        throw new Error('symbol not found - ' + index.index);
+    }
+    if (index.params) {
+        cfg = { ...cfg, ...index.params };
+    }
+    let ret: string = '';
+    for (let i = 0; i < cfg.size; ++ i) {
+        if (cfg.isTemplate) {
+            logger.debug('level = ' + level);
+            if (level < (cfg.maxNested || 64)) {
+                ret += scanSymbolItems(cfg.template, indexConfig, nested, i, ++ level);
             } else {
-                ret += cfg.output(indexConfig, nested, i);
+                break;
+                // throw new Error('symbol stack size exceeded - ' + index.index);
             }
-            if (cfg.delimiter) {
-                if (i < cfg.size - 1) {
-                    ret += cfg.delimiter;
-                }
+        } else {
+            ret += cfg.output(indexConfig, nested, i);
+        }
+        if (cfg.delimiter) {
+            if (i < cfg.size - 1) {
+                ret += cfg.delimiter;
             }
         }
-
-        return ret;
     }
 
-    throw new Error('symbol not found - ' + index.index);
+    return ret;
+
+    // throw new Error('symbol not found - ' + index.index);
 }
 
 export function translateTemplate(template: string[], indexConfig: IndexConfig): string[] {

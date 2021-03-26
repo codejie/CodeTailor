@@ -51,7 +51,7 @@ export function loadConfig(folder: string = '.'): IndexConfig {
 
 export function loadBlockConfig(indexConfig: IndexConfig, block: Block): void {
     if (block.base) {
-        block = { ...indexConfig.block[block.name], ...block };
+        block = { ...indexConfig.block[block.base], ...block };
     }
     if (!block.loop) {
         block.loop = 1;

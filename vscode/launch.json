@@ -1,0 +1,23 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "preLaunchTask": "tsc: build - tsconfig.json",
+            "name": "Launch Program",
+            "program": "${workspaceFolder}/dist/index.js",
+            "args": [
+                "-i",
+                "/Users/Jie/Code/git/CodeTailor/index-config",
+                "-t",
+                "/Users/Jie/Code/git/CodeTailor/example/test-template/test.template"
+            ],
+            "outputCapture": "std",
+            "console": "integratedTerminal"
+        }
+    ]
+}

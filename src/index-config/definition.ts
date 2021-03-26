@@ -1,7 +1,8 @@
 export interface Block {
     name: string,
     base?: string,
-    loop?: number
+    loop?: number,
+    values?: string[] // loop = this.values.length * this.loop
 }
 
 export interface Symbol {
@@ -44,7 +45,8 @@ export interface IndexParams {
 
 export interface BlockNested {
     block: IndexParams,
-    loop: number      
+    loop: number,
+    value?: string   
 }
 
 export interface Template {
@@ -65,10 +67,12 @@ export interface Project { // project.config
     desc?: string,
     author?: string,
     version?: string,
-    indexConfig?: string, // default ./index
+    jsIndex?: string,
+    jsonIndex?: string,
     included?: string[],
     excluded?: string[],
-    output?: string, // default ./output
+    outputFolder?: string, // default ./output
+    outputSuffix?: string // default .o
 }
 
 // export function defaultIndexOutput(indexConfig?: IndexConfig, nested?: Nested[], position?: number): string {
