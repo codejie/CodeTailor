@@ -1,0 +1,10 @@
+@!name   test
+@!desc   the project file of CodeTailor
+@!author Jie.
+@!version    v1.0
+@!rootFolder  /Users/Jie/Code/git/CodeTailor/example
+@!recursion  true
+@!outputFolder   ./output
+@!outputSuffix   .java
+@!included    t2.template
+@!excluded  t1.template

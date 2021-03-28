@@ -1,10 +1,10 @@
-@name   ArrayTypeServiceTest
-@desc   description
-@author jie.
-@version    1.1.0
-@jsIndex    ./t2
-@output     ./ArrayTypeServiceTest.java
-@template
+@!name   ArrayTypeServiceTest
+@!desc   description
+@!author jie.
+@!version    1.1.0
+@!jsIndex    ./
+@!output     ./ArrayTypeServiceTest.java
+@!template
 package com.hundsun.jrescloud.test.sofa.rpc.t2;
 
 import java.util.Arrays;

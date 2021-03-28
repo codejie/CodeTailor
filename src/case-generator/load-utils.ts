@@ -2,8 +2,9 @@
 import fs from 'fs';
 import path from 'path';
 import readline from 'readline';
-import { loadBlockConfig, loadSymbolConfig, scanFolder } from '../index-config';
-import { Block, Symbol, IndexConfig, Template } from '../index-config/definition';
+import { loadBlockConfig, loadSymbolConfig, scanIndeConfigFolder } from '../index-config';
+import { Block, Symbol, IndexConfig, Template, Project } from '../index-config/definition';
+import { resolveAbsolutePath } from './utils';
 
 export function loadTemplate(indexConfig: IndexConfig, file: string): Promise<Template> {
     return new Promise<Template>((resolve, reject) => {
@@ -20,21 +21,19 @@ export function loadTemplate(indexConfig: IndexConfig, file: string): Promise<Te
     
         reader.on('line', line => {
             if (!isTemplate) {
-                const ctx = line.split(/[ \t]+/);
+                const ctx = line.trim().split(/[ \t]+/);
                 if (ctx && ctx.length > 0 && ctx[0].length > 1) {
-                    const label = ctx[0].substring(1);
-                    if (label === '##') { // remark
-                        // skip
-                    } else if (label === 'template') {
-                        isTemplate = true;
-                    } else {
-                        ret[label] = ctx[1];
+                    if (ctx[0].charAt(0) === '@' && ctx[0].charAt(1) === '!') {
+                        const label = ctx[0].substring(2);
+                        // if (label === '##') { // remark
+                        //     // skip
+                        // } else 
+                        if (label === 'template') {
+                            isTemplate = true;
+                        } else {
+                            ret[label] = ctx.slice(1).join(' ');//ctx[1];
+                        }
                     }
-                    // if (label != 'template') {
-                    //     ret[label] = ctx[1];
-                    // } else {
-                    //     isTemplate = true;
-                    // }
                 }
             } else {
                 ret.lines.push(line);
@@ -42,70 +41,141 @@ export function loadTemplate(indexConfig: IndexConfig, file: string): Promise<Te
         });
 
         reader.on('close', () => {
-            ret.indexConfig = mergeTemplateIndex(indexConfig, ret);
+            ret.indexConfig = mergeIndexConfig(indexConfig, path.dirname(ret.file), ret.jsonIndex, ret.jsIndex);
+            // ret.indexConfig = mergeTemplateIndex(indexConfig, ret);
             resolve(ret);
         });    
     });
 }
 
-export async function loadProject(file: string): Promise<void> {
-    // return new Promise<void>((resolve, reject) => {
-    //     const ret: any = {
-    //         name: 'undefined',
-    //         file: file,
-    //         lines: []
-    //     };
-    //     let isTemplate = false;
-        
-    //     const reader = readline.createInterface({
-    //         input: fs.createReadStream(file)
-    //     });
-    
-    //     reader.on('line', line => {
-    //         if (!isTemplate) {
-    //             const ctx = line.split(/[ \t]+/);
-    //             if (ctx && ctx.length > 0 && ctx[0].length > 1) {
-    //                 const label = ctx[0].substring(1);
-    //                 if (label === '##') { // remark
-    //                     // skip
-    //                 } else if (label === 'template') {
-    //                     isTemplate = true;
-    //                 } else {
-    //                     ret[label] = ctx[1];
-    //                 }
-    //                 // if (label != 'template') {
-    //                 //     ret[label] = ctx[1];
-    //                 // } else {
-    //                 //     isTemplate = true;
-    //                 // }
-    //             }
-    //         } else {
-    //             ret.lines.push(line);
-    //         }
-    //     });
+export async function loadProject(indexConfig: IndexConfig, file: string): Promise<Project> {
+    return new Promise<Project>((resolve, reject) => {
+        const ret: any = {
+            name: 'undefined',
+            file: file,
+            files: []
+        };
 
-    //     reader.on('close', () => {
-    //         ret.indexConfig = mergeTemplateIndex(indexConfig, ret);
-    //         resolve(ret);
-    //     });    
-    // });    
-    return Promise.resolve();
+        const reader = readline.createInterface({
+            input: fs.createReadStream(file)
+        });
+    
+        reader.on('line', line => {
+            const ctx = line.trim().split(/[ \t]+/);
+            if (ctx && ctx.length > 0 && ctx[0].length > 1) {
+                if (ctx[0].charAt(0) === '@' && ctx[0].charAt(1) === '!') {
+                    const label = ctx[0].substring(2);
+                    const value = ctx.slice(1).join(' ');
+                    if (label === 'included' || label === 'excluded') {
+                        ret[label] = AnalyseLineToRegExp(value);// AnlaparseLine(ctx[1]);
+                    } else if (label === 'recursion') {
+                        ret[label] = (value === 'true');
+                    } else {
+                        ret[label] = value;//ctx.slice(1).join(' ');// ctx[1];
+                    }
+                }
+            }
+        });
+
+        reader.on('close', () => {
+            // default attribute
+            if (!ret.recursion) {
+                ret.recursion = false;
+            }
+            ret.rootFolder = resolveAbsolutePath(undefined, ret.rootFolder);
+            if (!ret.outputFolder) {
+                ret.outputFolder = './output';
+            }
+            ret.outputFolder = resolveAbsolutePath(path.dirname(file), ret.outputFolder);
+            if (!ret.outputExtension) {
+                ret.outputExtension = '.output';
+            }
+            // load project indexConfig
+            ret.indexConfig = mergeIndexConfig(indexConfig, ret.rootFolder, ret.jsonIndex, ret.jsIndex);
+            // scan and filter files
+            ret.files = scanTemplateFiles(ret.rootFolder, ret.recursion, ret.included, ret.excluded);
+            resolve(ret);
+        });    
+    });    
+    // return Promise.resolve();
 }
 
-function mergeTemplateIndex(indexConfig: IndexConfig, template: Template): IndexConfig {
-    const templatePath = path.dirname(template.file);;
+function AnalyseLineToRegExp(line: string): RegExp[] {
+    const items = line.split(/[,]+/);
+    const ret: RegExp[] = [];
+    items.forEach(item => {
+        if (item.length > 0) {
+            ret.push(makeWildcardRegExp(item));
+        }
+    });
+    return ret;
+}
+
+function makeWildcardRegExp(wildcard: string): RegExp {
+    const w = wildcard.replace(/[.+^${}()|[\]\\]/g, '\\$&'); // regexp escape 
+    return new RegExp(`^${w.replace(/\*/g,'.*').replace(/\?/g,'.')}$`);
+  }
+
+function scanTemplateFiles(folder: string, recursion: boolean, included?: RegExp[], excluded?: RegExp[]): string[] {
+    const ret: string[] = [];
+    if (!fs.existsSync(folder)) {
+        return ret;
+    }
+    let files: string[] = fs.readdirSync(folder);
+    files.forEach(file => {
+        if ((!excluded || !checkTemplateIncluded(excluded, file))) { // excluded
+            const filePath = path.join(folder, file);
+            const stats = fs.statSync(filePath);
+            if (stats.isDirectory() && recursion) {
+                ret.push(...scanTemplateFiles(filePath, recursion, included, excluded));
+            } else if (stats.isFile()) {
+                if(!included || checkTemplateIncluded(included, file)) { // include
+                    ret.push(path.join(folder, file));
+                }
+            }
+        }
+    });
+
+    return ret;
+}
+
+function checkTemplateIncluded(included: RegExp[], file: string): boolean {
+    for (let i = 0; i < included.length; ++ i) {
+        if (included[i].test(file)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function mergeIndexConfig(indexConfig: IndexConfig, dirname: string, jsonIndex?: string, jsIndex?: string): IndexConfig {
     const ret = { ...indexConfig };
 
-    if (template.jsonIndex) {
-        loadJSONIndex(ret, path.join(templatePath, template.jsonIndex));
+    if (jsonIndex) {
+        loadJSONIndex(ret, resolveAbsolutePath(dirname, jsonIndex));// path.join(dirname, jsonIndex));
     }
 
-    if (template.jsIndex) {
-        loadJSIndex(ret, path.join(templatePath, template.jsIndex));
+    if (jsIndex) {
+        loadJSIndex(ret, resolveAbsolutePath(dirname, jsIndex));// path.join(dirname, jsIndex));
     }
 
     return ret;
 }
+
+// function mergeTemplateIndex(indexConfig: IndexConfig, template: Template): IndexConfig {
+//     const templatePath = path.dirname(template.file);;
+//     const ret = { ...indexConfig };
+
+//     if (template.jsonIndex) {
+//         loadJSONIndex(ret, path.join(templatePath, template.jsonIndex));
+//     }
+
+//     if (template.jsIndex) {
+//         loadJSIndex(ret, path.join(templatePath, template.jsIndex));
+//     }
+
+//     return ret;
+// }
 
 function loadJSONIndex(indexConfig: IndexConfig, file: string): void {
     const index = require(file);
@@ -123,14 +193,14 @@ function loadJSONIndex(indexConfig: IndexConfig, file: string): void {
 
 function loadJSIndex(indexConfig: IndexConfig, jsPath: string): void {
 
-    const blocks = scanFolder(jsPath + '/block');
+    const blocks = scanIndeConfigFolder(jsPath + '/block');
 
     blocks.forEach(cfg => {
         const block = require(cfg).default as Block;
         loadBlockConfig(indexConfig, block);
     });
 
-    const symbols = scanFolder(jsPath + '/symbol');
+    const symbols = scanIndeConfigFolder(jsPath + '/symbol');
 
     symbols.forEach(cfg => {
         const symbol = require(cfg).default as Symbol;

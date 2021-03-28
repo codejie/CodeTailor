@@ -50,29 +50,37 @@ export interface BlockNested {
 }
 
 export interface Template {
-    name: string,
+    name: string, // @name
+    desc?: string, // @desc
+    author?: string, // @author
+    version?: string, // @version
+    jsIndex?: string, // @jsIndex
+    jsonIndex?: string, // @jsonIndex
+    output?: string, // @output
+    lines: string[] // @template
+
     file: string,
-    desc?: string,
-    author?: string,
-    version?: string,
-    indexConfig?: string,
-    jsIndex?: string,
-    jsonIndex?: string,
-    output?: string,
-    lines: string[],
+    indexConfig: IndexConfig, //
 }
 
 export interface Project { // project.config
-    name: string,
-    desc?: string,
-    author?: string,
-    version?: string,
-    jsIndex?: string,
-    jsonIndex?: string,
-    included?: string[],
-    excluded?: string[],
-    outputFolder?: string, // default ./output
-    outputSuffix?: string // default .o
+    name: string, // @name
+    desc?: string, // @desc
+    author?: string, // @auth
+    version?: string, // @version
+    jsIndex?: string, // @jsIndex
+    jsonIndex?: string, // @jsonIndex
+    rootFolder: string, // @rootFolder
+    recursion?: boolean, // @recursion default false
+    //overTemplateOutput?: boolean
+    outputFolder?: string, // @outputFolder default ./output
+    outputExtension?: string, // @outputExtension default .o
+    included?: RegExp[], // @included default *.template,
+    excluded?: RegExp[], // @excluded
+
+    file: string,
+    indexConfig: IndexConfig,
+    files: string[]
 }
 
 // export function defaultIndexOutput(indexConfig?: IndexConfig, nested?: Nested[], position?: number): string {

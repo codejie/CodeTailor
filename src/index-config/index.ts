@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { Symbol, IndexConfig, Block, BlockNested } from "./definition";
 
-export function scanFolder(folder: string): string[] {
+export function scanIndeConfigFolder(folder: string): string[] {
     const ret: string[] = [];
 
     if (!fs.existsSync(folder)) {
@@ -14,7 +14,7 @@ export function scanFolder(folder: string): string[] {
         const filePath = path.join(folder, file);
         const stats = fs.statSync(filePath);
         if (stats.isDirectory()) {
-            ret.push(...scanFolder(filePath));
+            ret.push(...scanIndeConfigFolder(filePath));
         } else if (stats.isFile()) {
             if (filePath.split('.').pop() === 'js') {
                 ret.push(filePath);
@@ -31,7 +31,7 @@ export function loadConfig(folder: string = '.'): IndexConfig {
     };
 
     // const blocks = scanFolder(path.join(__dirname, folder + '/block'));
-    const blocks = scanFolder(folder + '/block');
+    const blocks = scanIndeConfigFolder(folder + '/block');
 
     blocks.forEach(cfg => {
         const block = require(cfg).default as Block;
@@ -39,7 +39,7 @@ export function loadConfig(folder: string = '.'): IndexConfig {
     });
 
     // const symbols = scanFolder(path.join(__dirname, folder + '/symbol'));
-    const symbols = scanFolder(folder + '/symbol');
+    const symbols = scanIndeConfigFolder(folder + '/symbol');
 
     symbols.forEach(cfg => {
         const symbol = require(cfg).default as Symbol;

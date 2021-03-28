@@ -1,0 +1,6 @@
+class Test {
+    void test() {
+       byte[] temp = { };
+       system.out.println(temp);
+    }
+}

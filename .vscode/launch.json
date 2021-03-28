@@ -13,8 +13,10 @@
             "args": [
                 "-i",
                 "/Users/Jie/Code/git/CodeTailor/index-config",
-                "-t",
-                "/Users/Jie/Code/git/CodeTailor/example/test-template/test.template"
+                // "-t",
+                // "/Users/Jie/Code/git/CodeTailor/example/test-template/test.template"
+                "-p",
+                "/Users/Jie/Code/git/CodeTailor/example/test-project/test.project"
             ],
             "outputCapture": "std",
             "console": "integratedTerminal"

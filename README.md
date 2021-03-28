@@ -4,12 +4,12 @@ a tool for generating code base on the template.
 ## Example
 - The template file of CodeTailor
 ```
-@name test
-@version v0.1
-@author Jie.
-@jsonIndex ./test.json
-@jsIndex ./test
-@template
+@!name test
+@!version v0.1
+@!author Jie.
+@!jsonIndex ./test.json
+@!jsIndex ./test
+@!template
 This is a normal line.
 
 @#case{"loop":1}#@
