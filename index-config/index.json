@@ -1,0 +1,14 @@
+{
+    "block":[
+        {
+            "name": "case",
+            "desc": "for most cases. ",
+            "loop": 1
+        },
+        {
+            "name": "block",
+            "desc": "define a block snippet.",
+            "loop": 1
+        }
+    ]
+}

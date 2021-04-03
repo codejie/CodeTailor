@@ -4,6 +4,7 @@ import path from 'path';
 import readline from 'readline';
 import { loadBlockConfig, loadSymbolConfig, scanIndeConfigFolder } from '../index-config';
 import { Block, Symbol, IndexConfig, Template, Project } from '../index-config/definition';
+import logger from '../logger';
 import { resolveAbsolutePath } from './utils';
 
 export function loadTemplate(indexConfig: IndexConfig, file: string): Promise<Template> {
@@ -197,13 +198,21 @@ function loadJSIndex(indexConfig: IndexConfig, jsPath: string): void {
 
     blocks.forEach(cfg => {
         const block = require(cfg).default as Block;
-        loadBlockConfig(indexConfig, block);
+        if (block) {
+            loadBlockConfig(indexConfig, block);
+        } else {
+            logger.warn('load block failed - ' + cfg);
+        }
     });
 
     const symbols = scanIndeConfigFolder(jsPath + '/symbol');
 
     symbols.forEach(cfg => {
         const symbol = require(cfg).default as Symbol;
-        loadSymbolConfig(indexConfig, symbol);
+        if (symbol) {
+            loadSymbolConfig(indexConfig, symbol);
+        } else {
+            logger.warn('load symbol failed - ' + cfg);
+        }
     });    
 }
