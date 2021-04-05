@@ -50,6 +50,9 @@ export function loadConfig(folder: string = '.'): IndexConfig {
 }
 
 export function loadBlockConfig(indexConfig: IndexConfig, block: Block): void {
+    if (!block) {
+        return;
+    }
     if (block.base) {
         block = { ...indexConfig.block[block.base], ...block };
     }
@@ -61,6 +64,9 @@ export function loadBlockConfig(indexConfig: IndexConfig, block: Block): void {
 }
 
 export function loadSymbolConfig(indexConfig: IndexConfig, symbol: Symbol): void {
+    if (!symbol) {
+        return;
+    }
     if (symbol.base) {
         symbol = { ...indexConfig.symbol[symbol.base], ...symbol };
     }

@@ -1,5 +1,5 @@
 exports.default = {
-    name: 'int',
+    name: 'number',
     desc: 'number base type',
     value: 0
 }
